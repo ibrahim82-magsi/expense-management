@@ -8,6 +8,7 @@ const App = () => {
   const [expense, setExpense] = useState([]);
   const [filterDate, setFilterDate] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
+  const [sortType, setSortType] = useState("");
 
   const addExpense = (e) => {
     e.preventDefault();
@@ -47,6 +48,15 @@ const App = () => {
     return matchDate && matchCategory;
   });
 
+  const sortedExpenses = [...filteredExpenses].sort((a, b) => {
+    if (sortType === "amount") {
+      return a.amount - b.amount;
+    }
+    if (sortType === "date") {
+      return new Date(a.date) - new Date(b.date);
+    }
+    return 0;
+  });
   return (
     <>
       <div>
@@ -84,6 +94,7 @@ const App = () => {
           </form>
         </section>
         <div>
+          <h2>Filter data with date Or category</h2>
           <input
             type="date"
             value={filterDate}
@@ -98,12 +109,24 @@ const App = () => {
           />
         </div>
 
+        <div className="sorted-div">
+          <h2>Sort by Date And Amount</h2>
+          
+          <select  value={sortType} onChange={(e) => setSortType(e.target.value)}>
+           
+          
+          <option value="">Sort by</option>
+          <option value="amount">Amount</option>
+          <option value="date">Date</option>
+        </select>
+        </div>
+
         <section>
           <h1>Expense List</h1>
           {expense.length === 0 ? (
             <h3>NO Expense Found</h3>
           ) : (
-            filteredExpenses.map((e) => (
+            sortedExpenses.map((e) => (
               <ul key={e.id}>
                 <li>{e.name}</li>
                 <li>{e.date}</li>
