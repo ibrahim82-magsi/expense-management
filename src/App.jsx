@@ -1,14 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const App = () => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [category, setCategory] = useState("");
-  const [expense, setExpense] = useState([]);
+  const [expense, setExpense] = useState(() => {
+    const saved = localStorage.getItem("expenses");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [filterDate, setFilterDate] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [sortType, setSortType] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("expenses", JSON.stringify(expense));
+  }, [expense]);
+
+  const clearAllExpenses = () => {
+    const confirmClear = window.confirm(
+      "Are you sure you want to delete all expenses"
+    );
+    if (confirmClear) {
+      setExpense([]);
+      localStorage.removeItem("expenses");
+    }
+  };
 
   const addExpense = (e) => {
     e.preventDefault();
@@ -111,14 +128,15 @@ const App = () => {
 
         <div className="sorted-div">
           <h2>Sort by Date And Amount</h2>
-          
-          <select  value={sortType} onChange={(e) => setSortType(e.target.value)}>
-           
-          
-          <option value="">Sort by</option>
-          <option value="amount">Amount</option>
-          <option value="date">Date</option>
-        </select>
+
+          <select
+            value={sortType}
+            onChange={(e) => setSortType(e.target.value)}
+          >
+            <option value="">Sort by</option>
+            <option value="amount">Amount</option>
+            <option value="date">Date</option>
+          </select>
         </div>
 
         <section>
@@ -136,9 +154,13 @@ const App = () => {
               </ul>
             ))
           )}
+          <span>
+            <button onClick={clearAllExpenses}>Clear all expenses</button>
+          </span>
         </section>
         <section>
           <h2>Total Expense section</h2>
+
           <h4>Rs {totalExpense}</h4>
         </section>
       </div>
